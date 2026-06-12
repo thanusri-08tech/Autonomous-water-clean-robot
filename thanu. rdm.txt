@@ -1,0 +1,2 @@
+Place any images, icons, or media here.
+This folder is referenced from index.html / style.css when needed.

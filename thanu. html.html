@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AquaBot — Autonomous Water Surface Cleaning Robot Dashboard</title>
+<meta name="description" content="Software simulation dashboard for an Autonomous Water Surface Cleaning Robot. Real-time analytics, navigation map, waste collection metrics and environmental impact." />
+<link rel="stylesheet" href="style.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<div id="loader" class="loader">
+  <div class="loader-inner">
+    <div class="ring"></div>
+    <h2>Initializing AquaBot Systems…</h2>
+    <p id="loaderStatus">Booting navigation core</p>
+  </div>
+</div>
+
+<header class="topbar glass">
+  <div class="brand">
+    <div class="logo">
+      <svg viewBox="0 0 32 32" fill="none"><path d="M16 3c5 6 8 11 8 15a8 8 0 11-16 0c0-4 3-9 8-15z" fill="url(#g)"/><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#7ad8ff"/><stop offset="1" stop-color="#7affc6"/></linearGradient></defs></svg>
+    </div>
+    <div>
+      <h1>AquaBot</h1>
+      <span>Surface Cleaning Robot · Simulation</span>
+    </div>
+  </div>
+  <nav class="subnav">
+    <a href="#overview">Overview</a>
+    <a href="#simulation">Simulation</a>
+    <a href="#analytics">Analytics</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#impact">Impact</a>
+    <a href="#team">Team</a>
+  </nav>
+  <div class="top-actions">
+    <div class="status-pill"><span class="dot pulse"></span> ONLINE</div>
+    <button id="themeToggle" class="icon-btn" aria-label="Toggle theme">◐</button>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section id="overview" class="hero">
+    <div class="wave wave1"></div>
+    <div class="wave wave2"></div>
+    <div class="hero-inner">
+      <div class="hero-text">
+        <span class="chip">Software Simulation · Academic Project</span>
+        <h2>Autonomous Water Surface <span class="grad">Cleaning Robot</span></h2>
+        <p>A fully interactive software simulation dashboard demonstrating navigation, waste detection, route optimization and environmental impact of an autonomous aquatic cleaning robot — built purely with HTML, CSS, JavaScript and Chart.js.</p>
+        <div class="hero-stats">
+          <div><strong id="hStat1">0</strong><span>Items Collected</span></div>
+          <div><strong id="hStat2">0%</strong><span>Area Cleaned</span></div>
+          <div><strong id="hStat3">0%</strong><span>Battery</span></div>
+          <div><strong id="hStat4">0</strong><span>Active Sensors</span></div>
+        </div>
+        <div class="hero-cta">
+          <a class="btn primary" href="#simulation">Open Live Simulation</a>
+          <a class="btn ghost" href="#analytics">View Analytics</a>
+        </div>
+      </div>
+      <div class="hero-visual glass">
+        <div class="mini-map">
+          <div class="robot-marker" id="heroRobot">🤖</div>
+          <div class="trash t1">🧴</div>
+          <div class="trash t2">🛍️</div>
+          <div class="trash t3">🍂</div>
+          <div class="trash t4">🧴</div>
+        </div>
+        <div class="mini-meta">
+          <div><span>Speed</span><b id="heroSpeed">1.2 m/s</b></div>
+          <div><span>Heading</span><b id="heroHeading">042°</b></div>
+          <div><span>Mode</span><b>AUTO</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KPI -->
+  <section class="kpis">
+    <div class="kpi glass"><span>Battery</span><h3 id="kBattery">--%</h3><div class="bar"><div id="kBatteryBar"></div></div></div>
+    <div class="kpi glass"><span>Cleaning Progress</span><h3 id="kClean">--%</h3><div class="bar"><div id="kCleanBar"></div></div></div>
+    <div class="kpi glass"><span>Area Covered</span><h3 id="kArea">-- m²</h3><small>of 3600 m²</small></div>
+    <div class="kpi glass"><span>Speed</span><h3 id="kSpeed">-- m/s</h3><small>cruise mode</small></div>
+    <div class="kpi glass"><span>Waste Collected</span><h3 id="kWaste">--</h3><small>items total</small></div>
+    <div class="kpi glass"><span>Runtime</span><h3 id="kRuntime">-- min</h3><small>est. remaining</small></div>
+  </section>
+
+  <!-- SIMULATION -->
+  <section id="simulation" class="grid-2">
+    <div class="card glass big">
+      <div class="card-head"><h3>Live Robot Simulation</h3><span class="badge">REAL-TIME</span></div>
+      <div class="sim-canvas">
+        <svg id="simSvg" viewBox="0 0 600 360" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <div class="sim-legend">
+        <span><i class="dot cyan"></i>Robot</span>
+        <span><i class="dot mint"></i>Cleaned Zone</span>
+        <span><i class="dot amber"></i>Detected Waste</span>
+        <span><i class="dot red"></i>Obstacle</span>
+      </div>
+    </div>
+    <div class="stack">
+      <div class="card glass">
+        <div class="card-head"><h3>Battery Health</h3></div>
+        <div class="battery-circle">
+          <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" stroke="rgba(255,255,255,.08)" stroke-width="10" fill="none"/><circle id="batRing" cx="60" cy="60" r="50" stroke="url(#bg)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="314" stroke-dashoffset="80" transform="rotate(-90 60 60)"/><defs><linearGradient id="bg"><stop offset="0" stop-color="#7ad8ff"/><stop offset="1" stop-color="#7affc6"/></linearGradient></defs></svg>
+          <div class="bc-text"><b id="batPct">78%</b><span id="batMode">Discharging</span></div>
+        </div>
+      </div>
+      <div class="card glass">
+        <div class="card-head"><h3>Obstacle Detection</h3><span class="badge" id="obstBadge">CLEAR</span></div>
+        <div class="obstacle">
+          <div class="radar"><span></span><span></span><span></span><div class="sweep"></div></div>
+          <div class="obstacle-info">
+            <div><span>Distance</span><b id="obstDist">-- m</b></div>
+            <div><span>Type</span><b id="obstType">--</b></div>
+            <div><span>Action</span><b id="obstAct">Cruise</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WASTE BREAKDOWN -->
+  <section class="grid-3">
+    <div class="card glass"><div class="card-head"><h3>Plastic Bottles</h3><span>🧴</span></div><h2 id="wBottles">0</h2><small>+<span id="wBottlesRate">0</span>/min</small></div>
+    <div class="card glass"><div class="card-head"><h3>Plastic Bags</h3><span>🛍️</span></div><h2 id="wBags">0</h2><small>+<span id="wBagsRate">0</span>/min</small></div>
+    <div class="card glass"><div class="card-head"><h3>Floating Debris</h3><span>🍂</span></div><h2 id="wFloat">0</h2><small>+<span id="wFloatRate">0</span>/min</small></div>
+  </section>
+
+  <!-- ANALYTICS -->
+  <section id="analytics" class="grid-2">
+    <div class="card glass"><div class="card-head"><h3>Cleaning Efficiency</h3><span class="badge">%</span></div><canvas id="chartEff"></canvas></div>
+    <div class="card glass"><div class="card-head"><h3>Battery Trend</h3><span class="badge">%</span></div><canvas id="chartBat"></canvas></div>
+    <div class="card glass"><div class="card-head"><h3>Waste Collected Over Time</h3><span class="badge">kg</span></div><canvas id="chartWaste"></canvas></div>
+    <div class="card glass"><div class="card-head"><h3>Area Coverage</h3><span class="badge">%</span></div><canvas id="chartCov"></canvas></div>
+  </section>
+
+  <!-- COVERAGE GRID + ACTIVITY -->
+  <section class="grid-2">
+    <div class="card glass">
+      <div class="card-head"><h3>Coverage Map (10×10 Zones)</h3><span class="badge" id="covCount">0%</span></div>
+      <div id="coverageGrid" class="cov-grid"></div>
+      <div class="legend"><span><i class="sw pending"></i>Pending</span><span><i class="sw active"></i>Active</span><span><i class="sw cleaned"></i>Cleaned</span></div>
+    </div>
+    <div class="card glass">
+      <div class="card-head"><h3>Live Activity Feed</h3><span class="badge">SYSTEM</span></div>
+      <ul id="activity" class="activity"></ul>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section id="architecture" class="card glass wide">
+    <div class="card-head"><h3>System Architecture</h3><span class="badge">SIGNAL FLOW</span></div>
+    <div class="arch">
+      <div class="node"><b>Sensors</b><span>Ultrasonic · Camera · GPS · IMU</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>Edge Controller</b><span>Microcontroller / SBC</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>AI / Navigation</b><span>Path planning · Object detection</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>Actuators</b><span>Motors · Collection arm</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>Dashboard</b><span>Telemetry & Analytics</span></div>
+    </div>
+  </section>
+
+  <!-- IMPACT -->
+  <section id="impact" class="grid-3">
+    <div class="card glass"><h3>♻️ CO₂ Reduction</h3><h2 id="imp1">0 kg</h2><p>Estimated CO₂ offset from prevented decomposition of plastics.</p></div>
+    <div class="card glass"><h3>🐟 Aquatic Life Protected</h3><h2 id="imp2">0</h2><p>Approximate species impact reduced by removing surface debris.</p></div>
+    <div class="card glass"><h3>💧 Water Quality Index</h3><h2 id="imp3">0</h2><p>Composite WQI improvement during active simulation period.</p></div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="card glass wide">
+    <div class="card-head"><h3>About the Project</h3></div>
+    <p>The Autonomous Water Surface Cleaning Robot is a software-simulated robotic system designed to autonomously navigate water bodies, detect floating waste, and collect debris using AI-driven navigation. This dashboard demonstrates how telemetry, computer vision and route optimization would integrate in a real deployment — entirely simulated for academic demonstration.</p>
+    <div class="tags"><span>Computer Vision</span><span>Path Planning</span><span>IoT Telemetry</span><span>Sustainability</span><span>Embedded Systems</span><span>Simulation</span></div>
+  </section>
+
+  <!-- FUTURE -->
+  <section class="card glass wide">
+    <div class="card-head"><h3>Future Enhancements</h3></div>
+    <div class="features">
+      <div><b>Solar Charging</b><p>Onboard PV panels for extended runtime.</p></div>
+      <div><b>Swarm Mode</b><p>Multi-robot coordination for larger lakes.</p></div>
+      <div><b>Underwater Probe</b><p>Optional submersible for deeper debris.</p></div>
+      <div><b>Cloud Sync</b><p>Mission logs uploaded for analytics.</p></div>
+      <div><b>ML Classification</b><p>On-device species & waste type detection.</p></div>
+      <div><b>Voice Alerts</b><p>Operator notifications on anomalies.</p></div>
+    </div>
+  </section>
+
+  <!-- TEAM -->
+  <section id="team" class="card glass wide">
+    <div class="card-head"><h3>Project Team</h3></div>
+    <div class="team">
+      <div class="member"><div class="avatar">AR</div><b>Aarav R.</b><span>Hardware & Sensors</span></div>
+      <div class="member"><div class="avatar">SP</div><b>Sneha P.</b><span>AI & Navigation</span></div>
+      <div class="member"><div class="avatar">VK</div><b>Vikram K.</b><span>Embedded Firmware</span></div>
+      <div class="member"><div class="avatar">MN</div><b>Meera N.</b><span>Frontend Dashboard</span></div>
+      <div class="member"><div class="avatar">DR</div><b>Dr. R. Iyer</b><span>Faculty Guide</span></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <p>© 2026 AquaBot Simulation · Academic Project · <span id="clock">--:--:--</span></p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
